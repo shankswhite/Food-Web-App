@@ -1,0 +1,10 @@
+.number-input {
+    width: 30px;  /* Adjust width as needed for a more square appearance */
+    height: 50px; /* Equal height and width for a square */
+    padding: 5px;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 5px; /* Optional: rounded corners */
+    background-color: #f8f8f8; /* Light grey background */
+    font-size: 16px; /* Larger text inside the input */
+}

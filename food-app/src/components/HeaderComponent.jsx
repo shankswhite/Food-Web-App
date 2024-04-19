@@ -1,13 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate here
 import { useRecipeCount } from '../util/useRecipeCount';
+// import { retrieveRecipeApi } from '../api/FoodApiService';
+// import { useState } from 'react';
 
 function HeaderComponent() {
-    const navigate = useNavigate(); // Define navigate using the useNavigate hook
-    const recipeCount = useRecipeCount(); // This might asynchronously update
-    const newRecipeNo = recipeCount + 1;
+    const navigate = useNavigate() // Define navigate using the useNavigate hook
+    const recipeCount = useRecipeCount() // This might asynchronously update
+    const newRecipeNo = recipeCount + 1
 
     function addNewRecipe() {
-        navigate(`/recipes/${newRecipeNo}`); // Correctly using template literals for dynamic route
+        navigate(`/recipes/${newRecipeNo}`) // Correctly using template literals for dynamic route
+
+        console.log("clicked" + newRecipeNo)
     }
 
     return (

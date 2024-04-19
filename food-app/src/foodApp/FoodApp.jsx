@@ -14,10 +14,10 @@ export default function FoodApp() {
                 <HeaderComponent />
                 <Routes>
                     <Route path='/' element={ <RecipeComponent /> } />
-{/*                     
+                    
                     <Route path='/recipes' element={
                         <RecipeListComponent /> 
-                    } /> */}
+                    } />
 
                     <Route path='/recipes/:recipeNo' element={
                         <RecipeComponent /> 
@@ -26,7 +26,7 @@ export default function FoodApp() {
                     <Route path='*' element={<ErrorComponent /> } />
 
                 </Routes>
-                <FooterComponent />
+                {/* <FooterComponent /> */}
             </BrowserRouter>
         </div>
     )

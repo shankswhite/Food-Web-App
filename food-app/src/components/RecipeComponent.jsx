@@ -1,26 +1,24 @@
-import { useEffect, useState, useCallback } from 'react'
-import {useParams, useNavigate} from 'react-router-dom'
-import { retrieveRecipeApi, updateRecipeApi, createRecipeApi, deleteRecipeApi } from '../api/FoodApiService'
-import {Formik, Form, Field, ErrorMessage} from 'formik'
-import { useRecipeCount } from '../util/useRecipeCount'
-
-// import moment from 'moment'
+import { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { retrieveRecipeApi, updateRecipeApi, createRecipeApi, deleteRecipeApi } from '../api/FoodApiService';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useRecipeCount } from '../util/useRecipeCount';
 
 export default function RecipeComponent() {
+    const { recipeNo } = useParams();
     
-    const {recipeNo} = useParams()
-    
-    const [name, setName] = useState('')
-    const [cuisine, setCuisine] = useState('')
-    const [tags, setTags] = useState([])
-    const [ingredients, setIngredients] = useState({})
-    const [seasonings, setSeasonings] = useState([])
-    const [tutorial, setTutorial] = useState('')
-    const [recipePic, setRecipePic] = useState('')
+    const [name, setName] = useState('');
+    const [cuisine, setCuisine] = useState('');
+    const [tags, setTags] = useState([]);
+    const [ingredients, setIngredients] = useState('');
+    const [seasonings, setSeasonings] = useState([]);
+    const [tutorial, setTutorial] = useState('');
+    const [recipePic, setRecipePic] = useState('');
+    const [number, setNumber] = useState('');
 
-    const navigate = useNavigate()
-    const recipeCount = useRecipeCount()
-        
+    const navigate = useNavigate();
+    const recipeCount = useRecipeCount();
+
     const retrieveRecipes = useCallback(() => {
         if (recipeNo !== -1) {
             retrieveRecipeApi(recipeNo)
@@ -28,10 +26,11 @@ export default function RecipeComponent() {
                     setName(response.data.name);
                     setCuisine(response.data.cuisine);
                     setTags(response.data.tags);
-                    setIngredients(response.data.ingredients);
+                    setIngredients(JSON.stringify(response.data.ingredients, null, 2)); // JSON string
                     setSeasonings(response.data.seasonings);
                     setTutorial(response.data.tutorial);
                     setRecipePic(response.data.recipePic);
+                    setNumber(response.data.number);
                 })
                 .catch(error => console.log(error));
         }
@@ -46,32 +45,34 @@ export default function RecipeComponent() {
     }, [recipeCount]);
 
     function onSubmit(values) {
-        // console.log(values)
+        try {
+            const parsedIngredients = JSON.parse(values.ingredients); // Parse ingredients back to object
 
-        const recipe = {
-            name: values.name,
-            cuisine: values.cuisine,
-            tags: values.tags,
-            ingredients: values.ingredients, 
-            seasonings: values.seasonings, 
-            tutorial: values.tutorial
-        }
+            const recipe = {
+                name: values.name,
+                cuisine: values.cuisine,
+                tags: values.tags,
+                ingredients: parsedIngredients,
+                seasonings: values.seasonings,
+                tutorial: values.tutorial,
+                number: values.number
+            };
 
-        // console.log(recipe)
-
-        if(recipeNo > recipeCount) {
-            createRecipeApi(recipeNo, recipe)
-            .then(response => {
-                navigate('/recipes')
-            })
-            .catch(error => console.log(error))
-    
-        } else {
-            updateRecipeApi(recipeNo, recipe)
-            .then(response => {
-                navigate('/recipes')
-            })
-            .catch(error => console.log(error))
+            if (recipeNo > recipeCount) {
+                createRecipeApi(recipeNo, recipe)
+                    .then(response => {
+                        navigate('/recipes');
+                    })
+                    .catch(error => console.log(error));
+            } else {
+                updateRecipeApi(recipeNo, recipe)
+                    .then(response => {
+                        navigate('/recipes');
+                    })
+                    .catch(error => console.log(error));
+            }
+        } catch (e) {
+            alert("Invalid JSON format in ingredients.");
         }
     }
 
@@ -86,39 +87,38 @@ export default function RecipeComponent() {
     }
 
     function validate(values) {
-        let errors = {}
-
-        if(values.name.length<5) {
-            errors.name = 'Enter atleast 5 characters'
+        let errors = {};
+        if (values.name.length < 5) {
+            errors.name = 'Enter at least 5 characters';
         }
-
-        // console.log(values)
-        return errors
+        try {
+            JSON.parse(values.ingredients);
+        } catch (e) {
+            errors.ingredients = 'Ingredients must be valid JSON';
+        }
+        return errors;
     }
 
     return (
         <div className="container">
-            <h1>Enter Recipe Details </h1>
+            <h1>Enter Recipe Details</h1>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <img src={recipePic} alt="Recipe" style={{ maxWidth: '700px', maxHeight: '700px', marginRight: '20px', marginTop: '20px' }} />
                 </div>
-                <div style={{ flex: 1}}>
-                    <Formik initialValues={ { name, cuisine, tags, ingredients, seasonings, tutorial } } 
-                        enableReinitialize = {true}
-                        onSubmit = {onSubmit}
-                        validate = {validate}
-                        validateOnChange = {false}
-                        validateOnBlur = {false}
+                <div style={{ flex: 1 }}>
+                    <Formik
+                        initialValues={{ name, cuisine, tags, ingredients, seasonings, tutorial, number }}
+                        enableReinitialize={true}
+                        onSubmit={onSubmit}
+                        validate={validate}
+                        validateOnChange={false}
+                        validateOnBlur={false}
                     >
-                    {
-                        (props) => (
+                        {(props) => (
                             <Form>
-                                <ErrorMessage 
-                                    name="name"
-                                    component="div"
-                                    className = "alert alert-warning"
-                                />
+                                <ErrorMessage name="name" component="div" className="alert alert-warning" />
+                                <ErrorMessage name="ingredients" component="div" className="alert alert-warning" />
 
                                 <fieldset className="form-group">
                                     <label>Name</label>
@@ -126,31 +126,29 @@ export default function RecipeComponent() {
                                 </fieldset>
                                 <fieldset className="form-group">
                                     <label>Cuisine</label>
-                                    <Field type="text" className="form-control" name="cuisine"/>
+                                    <Field type="text" className="form-control" name="cuisine" />
                                 </fieldset>
                                 <fieldset className="form-group">
                                     <label>Ingredients</label>
-                                    <Field type="text" className="form-control" name="ingredients"/>
+                                    <Field as="textarea" className="form-control" name="ingredients" />
                                 </fieldset>
                                 <fieldset className="form-group">
                                     <label>Seasonings</label>
-                                    <Field type="text" className="form-control" name="seasonings"/>
+                                    <Field type="text" className="form-control" name="seasonings" />
                                 </fieldset>
                                 <fieldset className="form-group">
                                     <label>Tutorial</label>
-                                    <Field type="text" className="form-control" name="tutorial"/>
+                                    <Field type="text" className="form-control" name="tutorial" />
                                 </fieldset>
                                 <div>
                                     <button type="submit" className="btn btn-success m-5">Save</button>
                                     <button type="button" className="btn btn-danger m-5" onClick={onDelete}>Delete</button>
                                 </div>
                             </Form>
-                        )
-                    }
+                        )}
                     </Formik>
                 </div>
             </div>
-
         </div>
-    )
+    );
 }
