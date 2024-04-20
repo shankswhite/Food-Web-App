@@ -23,11 +23,11 @@ function HeaderComponent() {
                         <div className="collapse navbar-collapse">
                             <ul className="navbar-nav">
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/recipes">DISHES</Link>
+                                    <Link className="nav-link" to="/">DISHES</Link>
                                 </li>
-                                <li className="nav-item">
+                                {/* <li className="nav-item">
                                     <Link className="nav-link" to="/recipes">CATEGORIES</Link>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                         <ul className="navbar-nav">
@@ -38,7 +38,7 @@ function HeaderComponent() {
                                 </button>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/bag">Your Bag</Link>
+                                <Link className="nav-link" to="/bags">Your Bag</Link>
                             </li>
                         </ul>
                     </nav>

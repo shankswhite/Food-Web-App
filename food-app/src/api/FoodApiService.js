@@ -26,3 +26,12 @@ export const createRecipeApi
         }
 });
 
+export const retrieveIngredientsApi
+    = () => apiClient.get(`/bags`)
+
+export const updateIngredientApi 
+    = (recipeNo, recipe) => apiClient.put(`/recipes/${recipeNo}`, recipe, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+});

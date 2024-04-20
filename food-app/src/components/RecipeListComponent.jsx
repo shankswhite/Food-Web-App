@@ -40,12 +40,22 @@ function RecipeListComponent() {
             });
     }
 
-    function handleNumberChange(e, id) {
-        const newRecipes = recipes.map(recipe => 
-            recipe.id === id ? { ...recipe, number: e.target.value } : recipe
-        );
+    function handleNumberChange(e, recipeNo) {
+        const newNumber = e.target.value;
+        const newRecipes = recipes.map(recipe => {
+            if (recipe.recipeNo === recipeNo) {
+                updateRecipeApi(recipeNo, { ...recipe, number: newNumber })
+                    .then(() => console.log(`Updated ${recipe.name}`))
+                    .catch(error => console.log("Failed to update recipe number:", error));
+    
+                return { ...recipe, number: newNumber };
+            }
+            return recipe;
+        });
         setRecipes(newRecipes);
     }
+    
+    
 
     function handleUpdate(recipeNo) {
         navigate(`/recipes/${recipeNo}`);
@@ -60,20 +70,20 @@ function RecipeListComponent() {
                     <tr>
                         <th>Image</th>
                         <th>Name</th>
-                        <th>Number</th>
+                        <th>Quantity</th>
                         <th>Update</th>
                     </tr>
                 </thead>
                 <tbody>
                     {recipes.map(recipe => (
-                        <tr key={recipe.id}>
+                        <tr key={recipe.recipeNo}>
                             <td style={{ verticalAlign: 'middle' }}><img src={recipe.recipePic} alt={recipe.name} style={{ width: "300px", height: "200px" }} /></td>
                             <td style={{ verticalAlign: 'middle' }}>{recipe.name}</td>
                             <td style={{ verticalAlign: 'middle' }}>
                                 <input
                                     type="text"
                                     value={recipe.number}
-                                    onChange={(e) => handleNumberChange(e, recipe.id)}
+                                    onChange={(e) => handleNumberChange(e, recipe.recipeNo)}
                                 />
                             </td>
                             <td style={{ verticalAlign: 'middle' }}>

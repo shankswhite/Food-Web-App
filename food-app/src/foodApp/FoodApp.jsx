@@ -6,6 +6,7 @@ import './FoodApp.css'
 import RecipeComponent from '../components/RecipeComponent'
 import RecipeListComponent from '../components/RecipeListComponent'
 import ErrorComponent from '../components/ErrorComponent'
+import IngredientsListComponent from '../components/IngredientsListComponent'
 
 export default function FoodApp() {
     return (
@@ -13,7 +14,7 @@ export default function FoodApp() {
             <BrowserRouter>
                 <HeaderComponent />
                 <Routes>
-                    <Route path='/' element={ <RecipeComponent /> } />
+                    <Route path='/' element={ <RecipeListComponent /> } />
                     
                     <Route path='/recipes' element={
                         <RecipeListComponent /> 
@@ -21,6 +22,10 @@ export default function FoodApp() {
 
                     <Route path='/recipes/:recipeNo' element={
                         <RecipeComponent /> 
+                    } />
+
+                    <Route path='/bags' element={
+                        <IngredientsListComponent /> 
                     } />
                     
                     <Route path='*' element={<ErrorComponent /> } />
